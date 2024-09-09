@@ -1,19 +1,20 @@
 #!/usr/bin/python3
-"""Module for task 0"""
+"""
+Function that queries the Reddit API and
+returns the number of subscribers.
+"""
+import requests # type: ignore
 
 
 def number_of_subscribers(subreddit):
-    """Get the number of subscribers for a given subreddit."""
-    import requests
-
+    """Returns the number of subs, 0 if the given subreddit is invalid."""
     url = f"https://www.reddit.com/r/{subreddit}/about.json"
+    headers = {'User-Agent': 'MyBot/0.1'}
+    response = requests.get(url, headers=headers, allow_redirects=False)
 
-    # Set a custom User-Agent header to avoid Too Many Requests issues
-    headers = {"User-Agent": "My-User-Agent"}
-
-    sub_info = requests.get(url, headers=headers, allow_redirects=False)
-
-    if sub_info.status_code >= 300:
+    if response.status_code == 200:
+        data = response.json()
+        subscribers = data['data']['subscribers']
+        return subscribers
+    else:
         return 0
-
-    return sub_info.json().get("data").get("subscribers")
